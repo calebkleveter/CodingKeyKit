@@ -21,6 +21,20 @@ final class CodingKeyKitTests: XCTestCase {
             _ = extractor.codingKeys()
         }
     }
+
+    func testCreateFromString() throws {
+        let extractor = CodingKeyExtractor(type: User.self)
+        let key = extractor.codingKey(for: "password")
+
+        XCTAssertEqual(key?.stringValue, "password")
+    }
+
+    // FAILING
+    func testCustomKeys() throws {
+        let extractor = CodingKeyExtractor(type: User.self)
+
+        XCTAssertEqual(extractor.codingKeys() as? [ModifiedKeys.CodingKeys], [.foo, .baz])
+    }
 }
 
 struct User: Codable {
@@ -28,4 +42,14 @@ struct User: Codable {
     let name: String
     let password: String
     let registered: Bool
+}
+
+struct ModifiedKeys: Codable {
+    var foo: Int
+    var baz: Int
+
+    enum CodingKeys: String, CodingKey {
+        case foo = "foo_bar"
+        case baz = "baz_biz"
+    }
 }
